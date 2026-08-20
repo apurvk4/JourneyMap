@@ -9,7 +9,7 @@ import { simplifyPolyline, epsilonForZoom } from '../../core/simplify';
 import { ReplayEngine } from '../../core/replay';
 import indiaBoundary from '../../assets/india-soi.json';
 
-const UNIFIED_MAP_STYLE: maplibregl.StyleSpecification = {
+export const UNIFIED_MAP_STYLE: maplibregl.StyleSpecification = {
   version: 8,
   sources: {
     'carto-dark': {
@@ -54,12 +54,12 @@ const UNIFIED_MAP_STYLE: maplibregl.StyleSpecification = {
 };
 
 // Colors for routes by activity type
-function getRouteColor(type: string | undefined): string {
+export function getRouteColor(type: string | undefined): string {
   return ACTIVITY_DISPLAY[type ?? 'UNKNOWN']?.color ?? '#64748b';
 }
 
 /** Add India SOI boundary overlay to the map. Idempotent & self-healing. */
-function addIndiaBoundaryLayer(map: maplibregl.Map, theme: string): void {
+export function addIndiaBoundaryLayer(map: maplibregl.Map, theme: string): void {
   if (!map.isStyleLoaded()) return;
 
   const isLight = theme === 'light';
@@ -199,6 +199,7 @@ export default function MapView() {
         center: [77.2, 28.6],
         zoom: 2,
         attributionControl: true,
+        preserveDrawingBuffer: true,
       });
       map.addControl(new maplibregl.NavigationControl({}), 'top-right');
       map.on('load', () => {

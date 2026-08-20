@@ -84,4 +84,33 @@ test.describe('Timeline App', () => {
     // Capture screenshot during flight replay
     await page.screenshot({ path: testInfo.outputPath('flight_rotated_marker.png') });
   });
+
+  test('Video Export modal opens and configures presets', async ({ page }, testInfo) => {
+    await page.goto('/');
+    await page.getByText('Load demo data').click();
+    await expect(page.locator('.sidebar')).toBeVisible({ timeout: 10000 });
+    await page.waitForTimeout(1500);
+
+    // Click Video export button
+    const videoBtn = page.getByRole('button', { name: /video/i });
+    await expect(videoBtn).toBeVisible();
+    await videoBtn.click();
+
+    // Verify modal is open
+    const modal = page.locator('.video-modal-content');
+    await expect(modal).toBeVisible();
+    await expect(page.locator('#video-modal-title')).toHaveText('Export Journey Video');
+
+    // Switch to 15s preset
+    await page.getByRole('button', { name: /15s/i }).click();
+
+    // Switch to 720p resolution
+    await page.getByRole('button', { name: /720p/i }).click();
+
+    await page.screenshot({ path: testInfo.outputPath('video_export_modal.png') });
+
+    // Close modal
+    await page.getByRole('button', { name: 'Cancel' }).click();
+    await expect(modal).not.toBeVisible();
+  });
 });

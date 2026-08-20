@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ReplayEngine } from '../../core/replay';
 import { useTimeline } from '../../stores/TimelineStore';
+import VideoExportModal from './VideoExportModal';
 
 const SPEEDS = [0.5, 1, 2, 5, 10, 25];
 
@@ -8,6 +9,7 @@ export default function ReplayControls() {
   const { state, dispatch, filteredSegments } = useTimeline();
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState<number | null>(null);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
   useEffect(() => {
     const i = setInterval(() => {
@@ -179,11 +181,24 @@ export default function ReplayControls() {
 
       {/* Export buttons */}
       <div className="replay-exports">
+        <button
+          type="button"
+          className="btn btn-ghost btn-xs btn-export-video"
+          onClick={() => setIsVideoModalOpen(true)}
+          aria-label="Export Video"
+        >
+          🎬 {state.selectedSegmentId ? 'Selected Video' : 'Video'}
+        </button>
         <ExportButton format="geojson" label="GeoJSON" />
         <ExportButton format="gpx" label="GPX" />
         <ExportButton format="kml" label="KML" />
         <ExportButton format="csv" label="CSV" />
       </div>
+
+      <VideoExportModal
+        isOpen={isVideoModalOpen}
+        onClose={() => setIsVideoModalOpen(false)}
+      />
     </div>
   );
 }

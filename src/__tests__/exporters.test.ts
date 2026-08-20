@@ -246,4 +246,26 @@ describe('exporters', () => {
       expect(gpx).not.toContain('<wpt');
     });
   });
+
+  describe('Video Exporter', () => {
+    it('detects supported MIME types and extensions', async () => {
+      const { getSupportedVideoMimeType, isVideoExportSupported } = await import('../core/exporters/video');
+      const webmInfo = getSupportedVideoMimeType('webm');
+      expect(webmInfo.extension).toBe('webm');
+      expect(typeof webmInfo.mimeType).toBe('string');
+
+      const isSupp = isVideoExportSupported();
+      expect(typeof isSupp).toBe('boolean');
+    });
+
+    it('rejects with error when empty segments are passed', async () => {
+      const { exportTimelineVideo } = await import('../core/exporters/video');
+      // Mock map object
+      const mockMap = {
+        getCanvas: () => document.createElement('canvas'),
+      } as unknown as import('maplibre-gl').Map;
+
+      await expect(exportTimelineVideo(mockMap, [])).rejects.toThrow();
+    });
+  });
 });

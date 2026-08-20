@@ -250,14 +250,19 @@ Export your timeline data in standard open GIS formats for use in Google Earth, 
 ![Export Toolbar](/home/apurvk/.gemini/antigravity/brain/8e8cfc07-bfc5-4214-8d5c-c3d68d22ce8f/18_export_buttons.png)
 
 ### Available Formats
-1. **GeoJSON (`.geojson`)**: Standard RFC 7946 GeoJSON `FeatureCollection` with `LineString` routes and `Point` visits, including bounding boxes and properties.
-2. **GPX (`.gpx`)**: GPS Exchange Format 1.1 with `<trk>` tracklogs for routes and `<wpt>` waypoints for visits with ISO timestamps.
-3. **KML (`.kml`)**: Google Earth KML 2.2 with colored route styles, timestamps, and extended metadata.
-4. **CSV (`.csv`)**: RFC 4180 flat spreadsheet format with latitude, longitude, addresses, distance, duration, and activity names.
+1. **🎬 Video (`.mp4` / `.webm`)**: Export animated journey videos with camera tracking, vehicle markers with directional heading, and HUD telemetry badges.
+   - **Duration Presets**: 15s (Reels / Stories), 30s (Social / Timeline Overview), 60s (Cinematic Recap), or Custom duration (3s - 300s).
+   - **Resolution Presets**: 1080p Full HD (1920×1080), 720p HD (1280×720), or Viewport Match.
+   - **HUD Telemetry Overlay**: Includes live date/time badges, transport mode indicator, and bottom progress bar.
+   - **Real-Time Progress & Cancellation**: View live completion percentage and cancel anytime.
+2. **GeoJSON (`.geojson`)**: Standard RFC 7946 GeoJSON `FeatureCollection` with `LineString` routes and `Point` visits, including bounding boxes and properties.
+3. **GPX (`.gpx`)**: GPS Exchange Format 1.1 with `<trk>` tracklogs for routes and `<wpt>` waypoints for visits with ISO timestamps.
+4. **KML (`.kml`)**: Google Earth KML 2.2 with colored route styles, timestamps, and extended metadata.
+5. **CSV (`.csv`)**: RFC 4180 flat spreadsheet format with latitude, longitude, addresses, distance, duration, and activity names.
 
 ### Whole Dataset vs. Selected Segment Export
 - **Full View Export**: When no segment is selected, clicking any export button downloads all currently filtered timeline segments.
-- **Single Segment Export**: When a route or visit is selected in the timeline list, the export buttons automatically update to **Selected GeoJSON**, **Selected GPX**, **Selected KML**, and **Selected CSV**, allowing you to export just that specific trip.
+- **Single Segment Export**: When a route or visit is selected in the timeline list, the export buttons automatically update to **Selected Video**, **Selected GeoJSON**, **Selected GPX**, **Selected KML**, and **Selected CSV**, allowing you to export or record just that specific trip.
 
 ---
 
