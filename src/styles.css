@@ -44,7 +44,7 @@
 
 html, body, #root {
   height: 100%;
-  overflow: hidden;
+  overflow: auto;
 }
 
 body {
@@ -80,6 +80,14 @@ body {
   gap: 16px;
 }
 
+.header-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+  padding: 0 12px;
+  min-width: 0;
+}
 .header-title {
   font-size: 16px;
   font-weight: 700;
@@ -97,11 +105,29 @@ body {
   gap: 8px;
 }
 
+@media (max-width: 768px) {
+  .header-center {
+    display: none;
+  }
+
+  .header-right {
+    gap: 6px;
+  }
+
+  .header-clear-mobile {
+    display: inline-flex;
+  }
+}
+
+/* Hide the mobile-clear button by default on larger screens */
+.header-clear-mobile {
+  display: none;
+}
 /* ─── Main area ──────────────────────────────────────── */
 .main {
   display: flex;
   flex: 1;
-  overflow: hidden;
+  overflow: auto;
 }
 
 /* ─── Sidebar ────────────────────────────────────────── */
@@ -240,13 +266,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  min-height: 100vh;
   background: linear-gradient(180deg, #071024, #0b1630);
   padding: 24px;
 }
 
 .upload-landing-inner {
-  max-width: 520px;
+  max-width: 680px;
   width: 100%;
   text-align: center;
 }
@@ -310,6 +336,53 @@ body {
   min-height: 20px;
 }
 
+.upload-instructions {
+  margin-top: 24px;
+  text-align: left;
+}
+
+.upload-instructions h2 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  text-align: center;
+}
+
+.upload-instructions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.upload-instruction-card {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.upload-instruction-card h3 {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+
+.upload-instruction-card ol {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.upload-instruction-card li+li {
+  margin-top: 5px;
+}
+
+.upload-instructions-note {
+  margin: 12px 0 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  text-align: center;
+}
 .upload-privacy {
   display: flex;
   align-items: center;
@@ -805,11 +878,121 @@ body {
     padding: 32px 20px;
   }
 
+                                                                                                                                .upload-instructions-grid {
+                                                                                                                                  grid-template-columns: 1fr;
+                                                                                                                                }
   .stats-grid {
     grid-template-columns: 1fr 1fr;
   }
 }
 
+/* Mobile drawer styles */
+.mobile-drawer-toggle {
+  display: none;
+}
+
+/* By default hide mobile drawer on larger screens */
+.mobile-drawer {
+  display: none;
+}
+
+@media (max-width: 768px) {
+
+  /* Hide desktop sidebar on small screens */
+  .desktop-sidebar {
+    display: none;
+  }
+
+  /* Show mobile drawer toggle in header */
+  .mobile-drawer-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 8px;
+  }
+
+  .drawer-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 60;
+  }
+
+  .mobile-drawer {
+    display: block;
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 92%;
+    max-width: 420px;
+    transform: translateX(100%);
+    transition: transform 0.25s ease, opacity 0.2s ease;
+    visibility: hidden;
+    opacity: 0;
+    z-index: 70;
+    pointer-events: none;
+  }
+
+  .mobile-drawer.open {
+    transform: translateX(0%);
+    pointer-events: auto;
+    visibility: visible;
+    opacity: 1;
+  }
+
+  .mobile-drawer-inner {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-surface);
+    border-left: 1px solid var(--border);
+    padding: 12px;
+    overflow: auto;
+  }
+
+  .mobile-drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
+  }
+
+  .mobile-drawer-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+/* Collapsible replay bar for mobile: collapsed state hides controls and shows a small handle */
+.replay-bar.collapsed {
+  height: 48px;
+  padding: 8px 12px;
+  overflow: hidden;
+
+}
+
+.replay-collapse-handle {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .replay-collapse-handle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 12px;
+    width: 100%;
+    cursor: pointer;
+    border-top: 1px solid var(--border);
+    background: var(--bg-surface);
+  }
+}
 /* ─── Reduced motion ─────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -1327,4 +1510,3 @@ body {
   color: #ffffff;
   border-color: #ef4444;
 }
-

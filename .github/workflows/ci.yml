@@ -30,7 +30,10 @@ jobs:
       - run: npm ci
       - run: npx playwright install chromium --with-deps
       - run: npm run build
-      - run: npm run test:e2e
+      - name: Playwright - Chromium
+        run: npm run test:e2e
+      - name: Playwright - Mobile
+        run: npx playwright test --project=mobile
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

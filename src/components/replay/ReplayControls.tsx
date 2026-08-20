@@ -10,6 +10,7 @@ export default function ReplayControls() {
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState<number | null>(null);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
     const i = setInterval(() => {
@@ -80,7 +81,8 @@ export default function ReplayControls() {
   if (!hasData) return null;
 
   return (
-    <div className="replay-bar">
+    <>
+      <div className={`replay-bar ${collapsed ? 'collapsed' : ''}`}>
       <div className="replay-controls" role="toolbar" aria-label="Playback controls">
         {/* Play / Pause */}
         {!state.replay.isPlaying ? (
@@ -199,7 +201,14 @@ export default function ReplayControls() {
         isOpen={isVideoModalOpen}
         onClose={() => setIsVideoModalOpen(false)}
       />
-    </div>
+      </div>
+
+      {/* Mobile collapse handle */}
+      <div className="replay-collapse-handle" onClick={() => setCollapsed((c) => !c)} role="button" aria-label={collapsed ? 'Expand replay controls' : 'Collapse replay controls'}>
+        {collapsed ? '▲ Show playback' : '▼ Hide playback'}
+      </div>
+
+    </>
   );
 }
 

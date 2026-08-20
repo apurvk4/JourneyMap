@@ -173,6 +173,31 @@ export default function Upload() {
 
         {status && <div className="upload-status">{status}</div>}
 
+        <section className="upload-instructions" aria-labelledby="export-instructions-title">
+          <h2 id="export-instructions-title">How to export your Timeline JSON</h2>
+          <div className="upload-instructions-grid">
+            <div className="upload-instruction-card">
+              <h3>Android</h3>
+              <ol>
+                <li>Open your phone’s <strong>Settings</strong> app.</li>
+                <li>Go to <strong>Location → Location services → Timeline</strong>.</li>
+                <li>Tap <strong>Export Timeline data</strong>, then save the JSON file.</li>
+              </ol>
+            </div>
+            <div className="upload-instruction-card">
+              <h3>iPhone</h3>
+              <ol>
+                <li>Open <strong>Google Maps</strong> and tap your profile picture.</li>
+                <li>Go to <strong>Settings → Personal content</strong>.</li>
+                <li>Tap <strong>Export Timeline data</strong>, then choose <strong>Save to Files</strong>.</li>
+              </ol>
+            </div>
+          </div>
+          <p className="upload-instructions-note">
+            Upload the exported <strong>Timeline.json</strong> or <strong>location-history.json</strong> file here.
+          </p>
+        </section>
+
         <div className="upload-privacy">
           <span className="upload-privacy-icon">🔒</span>
           <span>

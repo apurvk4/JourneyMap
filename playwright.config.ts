@@ -10,6 +10,9 @@ export default defineConfig({
     baseURL: 'http://localhost:5173',
     trace: 'on-first-retry',
   },
-  projects: [ { name: 'chromium', use: { ...devices['Desktop Chrome'], launchOptions: { args: ['--use-gl=angle', '--use-angle=swiftshader', '--ignore-gpu-blocklist'] } }, } ],
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'], launchOptions: { args: ['--use-gl=angle', '--use-angle=swiftshader', '--ignore-gpu-blocklist'] } }, },
+    { name: 'mobile', use: { ...devices['Pixel 5'], launchOptions: { args: ['--use-gl=angle', '--ignore-gpu-blocklist'] } }, },
+  ],
   webServer: { command: 'npm run dev', url: 'http://localhost:5173', reuseExistingServer: !process.env.CI },
 });
