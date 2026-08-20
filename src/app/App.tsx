@@ -73,7 +73,7 @@ function AppContentInner({ drawerOpen, setDrawerOpen }: { drawerOpen: boolean; s
               setTimeline(data);
               // update global status so header-center shows message
               dispatch({ type: 'SET_STATUS', status: `Demo loaded — ${data.segments.length} segments` });
-            } catch (e) {
+            } catch {
               // ignore here; Upload handles errors in its UI
             }
           }} title="Load demo data">Demo</button>
