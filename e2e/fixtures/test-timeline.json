@@ -1,0 +1,29 @@
+{
+  "semanticSegments": [
+    {
+      "startTime": "2024-01-01T10:00:00Z",
+      "endTime": "2024-01-01T11:00:00Z",
+      "timelinePath": [
+        { "point": "geo:37.7749,-122.4194" },
+        { "point": "geo:37.7750,-122.4195" }
+      ],
+      "activity": {
+        "start": { "latLng": "37.7749,-122.4194" },
+        "end": { "latLng": "37.7750,-122.4195" },
+        "distanceMeters": 100,
+        "topCandidate": { "type": "WALKING", "probability": 0.9 }
+      }
+    },
+    {
+      "startTime": "2024-01-01T11:00:00Z",
+      "endTime": "2024-01-01T12:00:00Z",
+      "visit": {
+        "topCandidate": {
+          "placeId": "ChIJd8BlQ2BZwokRAFUEcm_qrcA",
+          "semanticType": "CAFE",
+          "placeLocation": { "latLng": "37.7750,-122.4195" }
+        }
+      }
+    }
+  ]
+}

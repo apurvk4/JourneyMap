@@ -1,0 +1,9 @@
+node_modules/
+dist/
+playwright-report/
+test-results/
+# Google Timeline exports contain highly sensitive location history. Keep local
+# test files outside source control and use the synthetic fixture in src/sample.
+Timeline.json
+Records.json
+*.timeline.json
