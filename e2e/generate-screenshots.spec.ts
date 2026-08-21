@@ -13,8 +13,11 @@ test.describe('Generate User Documentation Screenshots', () => {
     await page.screenshot({ path: shot('01_landing') });
 
     // ── 2. Load Demo Data → Dark Dashboard ──
-    await page.getByText('Load demo data').click();
-    await expect(page.locator('.sidebar')).toBeVisible({ timeout: 10000 });
+    const demoButton = page.locator('button[title="Load demo data"], button:has-text("Load demo data")').first();
+    await demoButton.scrollIntoViewIfNeeded();
+    await demoButton.click({ force: true });
+    const clearBtn = page.getByRole('button', { name: 'Clear timeline', exact: true });
+    await expect(clearBtn).toBeVisible({ timeout: 10000 });
     await page.waitForTimeout(3000);
     await page.screenshot({ path: shot('02_dashboard_dark') });
 
@@ -157,13 +160,13 @@ test.describe('Generate User Documentation Screenshots', () => {
     }
 
     // ── 16. Replay Playback ──
-    const playBtn = page.getByRole('button', { name: 'Play' });
+    const playBtn = page.getByRole('button', { name: 'Play', exact: true });
     await playBtn.click();
     await page.waitForTimeout(3000);
     await page.screenshot({ path: shot('16_replay_playing') });
 
     // ── 17. Replay Paused → show controls ──
-    const pauseBtn = page.getByRole('button', { name: 'Pause' });
+    const pauseBtn = page.getByRole('button', { name: 'Pause', exact: true });
     if (await pauseBtn.count() > 0) {
       await pauseBtn.click();
       await page.waitForTimeout(500);

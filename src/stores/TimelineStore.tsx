@@ -10,7 +10,7 @@ import React, { createContext, useContext, useReducer, useRef, useCallback, useM
 import type { TimelineData, TimelineSegment, DateRange, Stats, SegmentType } from '../core/model';
 import { computeStatistics } from '../core/statistics';
 import { saveTimeline, loadTimeline, clearTimeline } from '../core/storage';
-import { getStoredTheme, setStoredTheme, type Theme } from '../core/theme';
+import { applyStoredTheme, getStoredTheme, setStoredTheme, type Theme } from '../core/theme';
 import { clipSegmentToRange } from '../core/filter';
 
 const PERSISTENCE_PREFERENCE_KEY = 'timeline_persistence_enabled';
@@ -57,22 +57,27 @@ export interface AppState {
   storageEnabled: boolean;
 }
 
-const initialState: AppState = {
-  status: '',
-  hasData: false,
-  dateRange: null,
-  activityTypes: new Set(),
-  segmentTypes: new Set(),
-  selectedSegmentId: null,
-  theme: getStoredTheme(),
-  replay: {
-    isPlaying: false,
-    speed: 1,
-    follow: true,
-    duration: null,
-    progress: 0,
-  },
-  storageEnabled: getStoragePreference(),
+const getInitialState = (): AppState => {
+  const theme = getStoredTheme();
+  applyStoredTheme(theme);
+
+  return {
+    status: '',
+    hasData: false,
+    dateRange: null,
+    activityTypes: new Set(),
+    segmentTypes: new Set(),
+    selectedSegmentId: null,
+    theme,
+    replay: {
+      isPlaying: false,
+      speed: 1,
+      follow: true,
+      duration: null,
+      progress: 0,
+    },
+    storageEnabled: getStoragePreference(),
+  };
 };
 
 // ─── Actions ─────────────────────────────────────────────────────────
@@ -160,10 +165,14 @@ interface TimelineContextValue {
 const TimelineContext = createContext<TimelineContextValue | null>(null);
 
 export function TimelineProvider({ children }: { children: React.ReactNode }) {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(reducer, undefined, getInitialState);
   const timelineRef = useRef<TimelineData | null>(null);
   // We use a counter to force re-render when timeline data changes
   const [, setVersion] = React.useState(0);
+
+  React.useEffect(() => {
+    setStoredTheme(state.theme);
+  }, [state.theme]);
 
   React.useEffect(() => {
     if (!state.storageEnabled) return;

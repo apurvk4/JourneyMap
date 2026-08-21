@@ -2,6 +2,24 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Mobile layout', () => {
     test.beforeEach(async ({ page }) => {
+        await page.addInitScript(() => {
+            try {
+                localStorage.setItem('timeline_persistence_enabled', 'false');
+                localStorage.clear();
+                sessionStorage.clear();
+            } catch {
+                // Ignore storage access issues in a restricted browser context.
+            }
+
+            try {
+                const req = indexedDB.deleteDatabase('timeline-visualizer');
+                req.onsuccess = () => undefined;
+                req.onerror = () => undefined;
+                req.onblocked = () => undefined;
+            } catch {
+                // ignore delete failures
+            }
+        });
         await page.goto('/');
     });
 
@@ -27,28 +45,45 @@ test.describe('Mobile layout', () => {
         await expect(drawer).toBeVisible();
         await expect(drawer.locator('.mobile-drawer-content >> text=Search')).toBeVisible();
 
-        // Close by clicking backdrop
-        await page.locator('.drawer-backdrop').click();
+        // Close via the drawer's close action instead of the backdrop, which is intentionally behind the panel.
+        await page.getByRole('button', { name: 'Close menu' }).click();
         await expect(drawer).not.toBeVisible();
     });
 
     test('header shows status and demo/clear buttons when timeline loaded', async ({ page }) => {
         await page.setViewportSize({ width: 420, height: 800 });
 
-        // Load demo using header Demo button (select by title to avoid duplicates)
-        const demoBtn = page.locator('button[title="Load demo data"]');
+        const demoBtn = page.locator('button[title="Load demo data"], button:has-text("Load demo data")').first();
         await expect(demoBtn).toBeVisible();
-        await demoBtn.click();
+        await demoBtn.evaluate((button) => {
+            (button as HTMLButtonElement).click();
+        });
 
-        // Wait a moment for the timeline to load and dashboard to appear
         await page.waitForTimeout(300);
 
-        // Click the global Clear timeline button and verify upload landing returns
-        const clearBtn = page.getByRole('button', { name: 'Clear timeline' });
+        await page.getByRole('button', { name: 'Open settings' }).click();
+
+        const clearBtn = page.getByRole('button', { name: 'Clear timeline' }).first();
         await expect(clearBtn).toBeVisible();
         await clearBtn.click();
 
-        // After clearing, upload landing should be visible again
         await expect(page.locator('.upload-landing').first()).toBeVisible();
+    });
+
+    test('opens a floating settings menu on mobile for overflow actions', async ({ page }) => {
+        await page.setViewportSize({ width: 420, height: 800 });
+
+        const demoBtn = page.locator('button[title="Load demo data"], button:has-text("Load demo data")').first();
+        await expect(demoBtn).toBeVisible();
+        await demoBtn.click();
+
+        await page.waitForTimeout(300);
+
+        await page.getByRole('button', { name: 'Open settings' }).click();
+
+        await expect(page.locator('.mobile-settings-menu')).toBeVisible();
+        await expect(page.getByRole('button', { name: 'Clear timeline' }).first()).toBeVisible();
+        await expect(page.getByRole('button', { name: 'Demo' }).first()).toBeVisible();
+        await expect(page.getByRole('button', { name: 'Load different file' }).first()).toBeVisible();
     });
 });

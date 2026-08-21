@@ -187,6 +187,11 @@ export default function MapView() {
   const isFlyingRef = useRef<boolean>(false);
   const initialReplayFlyDoneRef = useRef<boolean>(false);
   const lastAppliedThemeRef = useRef<string>(state.theme);
+  const replayStateRef = useRef(state.replay);
+
+  useEffect(() => {
+    replayStateRef.current = state.replay;
+  }, [state.replay]);
 
   // Initialize map
   useEffect(() => {
@@ -434,6 +439,7 @@ export default function MapView() {
     if (!seg) return;
 
     if (seg.type === 'route' && seg.points.length >= 2) {
+      const highlightColor = state.theme === 'light' ? '#0f172a' : '#ffffff';
       map.addSource('selected', {
         type: 'geojson',
         data: {
@@ -462,9 +468,9 @@ export default function MapView() {
         type: 'line',
         source: 'selected',
         paint: {
-          'line-color': '#ffffff',
+          'line-color': highlightColor,
           'line-width': 6,
-          'line-opacity': 0.5,
+          'line-opacity': 0.75,
         },
       });
       map.addLayer({
@@ -475,7 +481,7 @@ export default function MapView() {
         paint: {
           'circle-radius': 7,
           'circle-color': ['match', ['get', 'kind'], 'start', '#22c55e', '#ef4444'],
-          'circle-stroke-color': '#ffffff',
+          'circle-stroke-color': highlightColor,
           'circle-stroke-width': 2,
         },
       });
@@ -520,12 +526,18 @@ export default function MapView() {
         zoom: 15,
       });
     }
-  }, [state.selectedSegmentId, filteredSegments]);
+  }, [state.selectedSegmentId, filteredSegments, state.theme]);
 
   // ── Replay engine ──
   useEffect(() => {
-    const engine = new ReplayEngine();
-    replayEngineRef.current = engine;
+    if (!replayEngineRef.current) {
+      replayEngineRef.current = new ReplayEngine();
+    }
+
+    const engine = replayEngineRef.current;
+    if (mapContainerRef.current) {
+      (mapContainerRef.current as HTMLDivElement & { __replayEngine?: ReplayEngine }).__replayEngine = engine;
+    }
 
     engine.onUpdate((rs) => {
       const map = mapRef.current;
@@ -546,7 +558,7 @@ export default function MapView() {
           }
         }
 
-        if (state.replay.follow && rs.isPlaying) {
+        if (replayStateRef.current.follow && rs.isPlaying) {
           const currentZoom = map.getZoom();
           const targetZoom = rs.isFlight ? 6.5 : (rs.activityType === 'IN_TRAIN' ? 10 : 14);
 
@@ -585,16 +597,19 @@ export default function MapView() {
 
     return () => {
       engine.unfreeze();
-      engine.destroy();
       replayMarkerRef.current?.remove();
       replayMarkerRef.current = null;
     };
-  }, [dispatch, state.replay.follow]);
+  }, [dispatch]);
 
   // ── Preload points & manage replay engine ──
   useEffect(() => {
     const engine = replayEngineRef.current;
     if (!engine) return;
+
+    if (mapContainerRef.current) {
+      (mapContainerRef.current as HTMLDivElement & { __replayEngine?: ReplayEngine }).__replayEngine = engine;
+    }
 
     const sourceKey = state.selectedSegmentId ? `seg_${state.selectedSegmentId}` : `filters_${filteredSegments.length}`;
     if (loadedReplaySourceRef.current !== sourceKey) {

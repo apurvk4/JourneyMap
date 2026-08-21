@@ -24,7 +24,7 @@ describe('Upload Component', () => {
 
   it('renders landing page initially', () => {
     render(<Upload />);
-    expect(screen.getByText('Timeline Visualizer')).toBeInTheDocument();
+    expect(screen.getByText('JourneyMap')).toBeInTheDocument();
     expect(screen.getByText('Load demo data')).toBeInTheDocument();
   });
 

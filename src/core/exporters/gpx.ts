@@ -45,7 +45,7 @@ export function toGPX(timeline: TimelineData) {
   const elements = [metadata, ...wpts, ...tracks].filter(Boolean);
 
   return `<?xml version="1.0" encoding="UTF-8"?>
-<gpx version="1.1" creator="Timeline Visualizer" xmlns="http://www.topografix.com/GPX/1/1">
+<gpx version="1.1" creator="JourneyMap" xmlns="http://www.topografix.com/GPX/1/1">
 ${elements.join('\n')}
 </gpx>`;
 }

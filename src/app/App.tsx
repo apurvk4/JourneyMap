@@ -36,6 +36,44 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
 
 function AppContentInner({ drawerOpen, setDrawerOpen }: { drawerOpen: boolean; setDrawerOpen: (v: boolean) => void }) {
   const { state, setTimeline, dispatch } = useTimeline();
+  const [settingsOpen, setSettingsOpen] = React.useState(false);
+
+  const handleGoHome = () => {
+    setTimeline(null);
+    setSettingsOpen(false);
+    setDrawerOpen(false);
+  };
+
+  const renderHeaderActions = () => (
+    <>
+      <ThemeToggle />
+      {state.hasData ? (
+        <button type="button" className="btn btn-ghost btn-sm" onClick={() => setTimeline(null)}>
+          Clear timeline
+        </button>
+      ) : null}
+      {state.hasData ? (
+        <button
+          type="button"
+          className="btn btn-ghost btn-sm"
+          onClick={() => {
+            try {
+              const actualData = (demoData as { default?: unknown }).default ?? demoData;
+              const { data } = parseGoogleTimeline(actualData);
+              setTimeline(data);
+              dispatch({ type: 'SET_STATUS', status: `Demo loaded — ${data.segments.length} segments` });
+            } catch {
+              // ignore here; Upload handles errors in its UI
+            }
+          }}
+          title="Load demo data"
+        >
+          Demo
+        </button>
+      ) : null}
+      {state.hasData ? <Upload /> : null}
+    </>
+  );
 
   // Render header always so navbar items are available on landing and dashboard
   return (
@@ -51,34 +89,40 @@ function AppContentInner({ drawerOpen, setDrawerOpen }: { drawerOpen: boolean; s
           >
             ☰
           </button>
-          {state.hasData ? <h1 className="header-title">Timeline Visualizer</h1> : null}
+          {state.hasData ? (
+            <button
+              type="button"
+              className="header-title-button"
+              onClick={handleGoHome}
+              aria-label="Go to home page"
+            >
+              <h1 className="header-title">JourneyMap</h1>
+            </button>
+          ) : null}
           <span className="header-privacy">🔒 Your data stays in your browser</span>
         </div>
         <div className="header-center">
           {state.status ? (
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <span className="text-muted" style={{ fontSize: 12 }}>{state.status}</span>
-              {state.hasData ? (
-                <button type="button" className="btn btn-ghost btn-sm" onClick={() => setTimeline(null)}>Clear timeline</button>
-              ) : null}
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center', minWidth: 0 }}>
+              <span className="text-muted" style={{ fontSize: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{state.status}</span>
             </div>
           ) : null}
         </div>
-        <div className="header-right">
-          <ThemeToggle />
-          <button type="button" className="btn btn-ghost btn-sm" onClick={() => {
-            try {
-              const actualData = (demoData as { default?: unknown }).default ?? demoData;
-              const { data } = parseGoogleTimeline(actualData);
-              setTimeline(data);
-              // update global status so header-center shows message
-              dispatch({ type: 'SET_STATUS', status: `Demo loaded — ${data.segments.length} segments` });
-            } catch {
-              // ignore here; Upload handles errors in its UI
-            }
-          }} title="Load demo data">Demo</button>
-          <button type="button" className="btn btn-ghost btn-sm header-clear-mobile" onClick={() => setTimeline(null)} style={{ display: 'none' }}>Clear timeline</button>
-          {state.hasData ? <Upload /> : null}
+        <div className="header-right desktop-header-actions">{renderHeaderActions()}</div>
+        <div className="mobile-header-actions">
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm"
+            aria-label="Open settings"
+            onClick={() => setSettingsOpen((prev) => !prev)}
+          >
+            ⚙️
+          </button>
+          {settingsOpen && (
+            <div className="mobile-settings-menu" role="menu" aria-label="Settings menu">
+              {renderHeaderActions()}
+            </div>
+          )}
         </div>
       </header>
 

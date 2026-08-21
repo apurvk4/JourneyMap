@@ -104,13 +104,6 @@ export default function Upload() {
         <button
           type="button"
           className="btn btn-sm btn-ghost"
-          onClick={() => setTimeline(null)}
-        >
-          Clear timeline data
-        </button>
-        <button
-          type="button"
-          className="btn btn-sm btn-ghost"
           onClick={() => inputRef.current?.click()}
         >
           Load different file
@@ -133,7 +126,7 @@ export default function Upload() {
   return (
     <div className="upload-landing">
       <div className="upload-landing-inner">
-        <h1 className="upload-title">Timeline Visualizer</h1>
+        <h1 className="upload-title">JourneyMap</h1>
         <p className="upload-subtitle">
           Visualize your Google Maps Timeline — entirely in your browser.
         </p>
