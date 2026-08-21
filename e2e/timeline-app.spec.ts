@@ -58,8 +58,8 @@ test.describe('Timeline App', () => {
 
   test('Landing page shows correctly', async ({ page }) => {
     await page.goto('/');
-    await expect(page.getByText('Timeline Visualizer')).toBeVisible();
-    await expect(page.getByText('Load demo data')).toBeVisible();
+    await expect(page.getByText('JourneyMap')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Load demo data' })).toBeVisible();
   });
 
   test('Load demo data works', async ({ page }) => {
@@ -87,10 +87,10 @@ test.describe('Timeline App', () => {
     await expect(page.getByRole('button', { name: 'Jan', exact: true })).toBeVisible();
 
     // Activity filtering
-    const mobileWalking = page.locator('.mobile-drawer.open .activity-filter-label:visible').filter({ hasText: /^Walking$/ });
-    await expect(mobileWalking.first()).toBeVisible();
+    const walkingFilter = page.getByLabel('Filter Walking', { exact: true });
+    await expect(walkingFilter.first()).toBeVisible();
     await closeMobileDrawerIfNeeded(page);
-    
+
     // Replay controls
     const playBtn = await getVisiblePlayButton(page);
     await expect(playBtn).toBeVisible();
