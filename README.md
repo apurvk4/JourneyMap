@@ -217,6 +217,10 @@ workers/
 
 ---
 
+## CI status
+
+[![CI](https://github.com/apurvk4/JourneyMap/actions/workflows/ci.yml/badge.svg)](https://github.com/apurvk4/JourneyMap/actions/workflows/ci.yml)
+
 ## Browser Support
 
 - Chrome 90+
