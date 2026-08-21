@@ -24,7 +24,10 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run test -- --run
-      - run: npm run build
+      - name: Build Project
+        run: npm run build
+        env:
+          GH_PAGES_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
       - uses: actions/upload-artifact@v4
         with:
           name: production-build
@@ -42,7 +45,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install chromium --with-deps
-      - run: npm run build
+      - name: Build Project
+        run: npm run build
+        env:
+          GH_PAGES_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
       - name: Playwright - Chromium
         run: npm run test:e2e
       - name: Playwright - Mobile
@@ -88,10 +94,27 @@ jobs:
           cache: npm
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
+      - name: Fetch Vercel Production Domain
+        run: |
+          if [[ "${VERCEL_ORG_ID}" == team_* ]]; then
+            TEAM_PARAM="?teamId=${VERCEL_ORG_ID}"
+          else
+            TEAM_PARAM=""
+          fi
+          RESPONSE=$(curl -s -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" "https://api.vercel.com/v9/projects/${VERCEL_PROJECT_ID}/domains$TEAM_PARAM")
+          DOMAIN=$(echo "$RESPONSE" | jq -r '.domains | map(select(.redirect == null)) | .[0].name // empty')
+          if [ -z "$DOMAIN" ]; then
+             DOMAIN=$(echo "$RESPONSE" | jq -r '.domains[0].name // empty')
+          fi
+          if [ -n "$DOMAIN" ]; then
+            echo "Fetched Vercel production domain: $DOMAIN"
+            echo "VERCEL_SITE_URL=https://$DOMAIN" >> $GITHUB_ENV
+          else
+            echo "Could not fetch domain. Falling back to default."
+          fi
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
       - name: Build Project Artifacts
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
-
