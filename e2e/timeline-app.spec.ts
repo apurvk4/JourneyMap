@@ -23,25 +23,61 @@ async function resetStoredTimeline(page: Parameters<typeof test>[0]['page']) {
 }
 
 async function clickDemoData(page: Parameters<typeof test>[0]['page']) {
-  const demoButton = page.locator('button[title="Load demo data"], button:has-text("Load demo data")').first();
-  await demoButton.evaluate((button) => {
-    (button as HTMLButtonElement).click();
-  });
+  const demoButton = page.getByRole('button', { name: 'Load demo data', exact: true }).first();
+  if (await demoButton.isVisible().catch(() => false)) {
+    await demoButton.click();
+    return;
+  }
+
+  const settingsButton = page.locator('button[aria-label="Open settings"]');
+  if (await settingsButton.isVisible().catch(() => false)) {
+    await settingsButton.click();
+  }
+
+  const menuDemoButton = page.getByRole('button', { name: 'Load demo data', exact: true }).first();
+  await menuDemoButton.click();
 }
 
 async function getVisibleClearButton(page: Parameters<typeof test>[0]['page']) {
-  return page.getByRole('button', { name: 'Clear timeline', exact: true });
+  const clearButton = page.getByRole('button', { name: 'Clear timeline', exact: true }).first();
+  if (await clearButton.isVisible().catch(() => false)) {
+    return clearButton;
+  }
+
+  const settingsButton = page.locator('button[aria-label="Open settings"]');
+  if (await settingsButton.isVisible().catch(() => false)) {
+    await settingsButton.click();
+  }
+
+  return page.getByRole('button', { name: 'Clear timeline', exact: true }).first();
 }
 
 async function getVisiblePlayButton(page: Parameters<typeof test>[0]['page']) {
-  return page.getByRole('button', { name: 'Play', exact: true });
+  return page.getByRole('button', { name: 'Play', exact: true }).first();
 }
 
 async function openMobileDrawerIfNeeded(page: Parameters<typeof test>[0]['page']) {
   const toggle = page.locator('.mobile-drawer-toggle');
-  if (await toggle.isVisible().catch(() => false)) {
-    await toggle.click();
+  if (!(await toggle.isVisible().catch(() => false))) {
+    return;
   }
+
+  const drawer = page.locator('.mobile-drawer.open');
+  if (await drawer.isVisible().catch(() => false)) {
+    return;
+  }
+
+  await toggle.click();
+  await expect(page.locator('.mobile-drawer.open')).toBeVisible({ timeout: 5000 });
+}
+
+async function getVisibleWalkingFilter(page: Parameters<typeof test>[0]['page']) {
+  const mobileFilter = page.locator('.mobile-drawer.open input[aria-label="Filter Walking"]').first();
+  if (await mobileFilter.isVisible().catch(() => false)) {
+    return mobileFilter;
+  }
+
+  return page.locator('input[aria-label="Filter Walking"]').first();
 }
 
 async function closeMobileDrawerIfNeeded(page: Parameters<typeof test>[0]['page']) {
@@ -87,8 +123,9 @@ test.describe('Timeline App', () => {
     await expect(page.getByRole('button', { name: 'Jan', exact: true })).toBeVisible();
 
     // Activity filtering
-    const walkingFilter = page.getByLabel('Filter Walking', { exact: true });
-    await expect(walkingFilter.first()).toBeVisible();
+    await openMobileDrawerIfNeeded(page);
+    const walkingFilter = await getVisibleWalkingFilter(page);
+    await expect(walkingFilter).toBeVisible();
     await closeMobileDrawerIfNeeded(page);
 
     // Replay controls
@@ -129,7 +166,7 @@ test.describe('Timeline App', () => {
   test('Flight replay rotates airplane icon towards destination', async ({ page }, testInfo) => {
     await page.goto('/');
     await clickDemoData(page);
-    await expect(page.getByRole('button', { name: 'Clear timeline' })).toBeVisible({ timeout: 10000 });
+    await expect(await getVisibleClearButton(page)).toBeVisible({ timeout: 10000 });
     await page.waitForTimeout(2000);
 
     // Start replay
