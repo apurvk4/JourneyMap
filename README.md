@@ -45,11 +45,12 @@ A privacy-first, browser-native web application to visualize Google Maps Timelin
 - GPX
 - KML
 - CSV
+- Video (MP4 or WebM, depending on browser support) — records the animated replay via MediaRecorder
 
 ### Privacy
 - **No backend** — the entire application is static HTML/JS/CSS
 - Timeline data never leaves the browser
-- No analytics, no logging, no cloud storage
+- No logging, no cloud storage; anonymous page-view analytics only (no location data, no cookies)
 - Map tiles are fetched from an external provider (the default is Carto); that provider can infer viewed map areas from tile requests.
 
 ---
@@ -70,7 +71,7 @@ Google Timeline JSON
         ├─► Replay engine (src/core/replay)
         ├─► Calendar heatmap
         ├─► Filtering & search
-        └─► Exporters (GeoJSON, GPX, KML, CSV)
+        └─► Exporters (GeoJSON, GPX, KML, CSV, MP4/WebM video)
 ```
 
 ### Key Design Decisions
@@ -106,8 +107,11 @@ The `dist/` directory can be deployed to any static hosting provider (GitHub Pag
 
 ### Test
 ```bash
-npm run test
+npm run test        # Vitest unit tests
+npm run test:e2e    # Playwright end-to-end tests
 ```
+
+> Playwright automatically starts the dev server and runs a desktop Chrome project plus a Pixel 5 mobile emulation project.
 
 ### Type Check
 ```bash
@@ -186,7 +190,10 @@ src/
 │   ├── statistics/Statistics.tsx  # Stats grid + breakdown
 │   ├── calendar/CalendarHeatmap.tsx  # Travel heatmap
 │   ├── visits/VisitList.tsx  # Day-grouped itinerary
-│   ├── replay/ReplayControls.tsx  # Playback + export buttons
+│   ├── replay/
+│   │   ├── ReplayControls.tsx  # Playback + export buttons
+│   │   └── VideoExportModal.tsx  # Replay video export dialog
+│   ├── theme/ThemeToggle.tsx  # Dark/light theme switcher
 │   └── search/Search.tsx     # Local timeline search
 ├── core/
 │   ├── model.ts              # Normalized data types
@@ -194,12 +201,12 @@ src/
 │   ├── geo.ts                # Haversine, interpolation, utils
 │   ├── statistics/index.ts   # Statistics engine
 │   ├── replay/index.ts       # ReplayEngine class
-│   ├── exporters/            # GeoJSON, GPX, KML, CSV
+│   ├── exporters/            # GeoJSON, GPX, KML, CSV, video
 │   └── storage/index.ts      # IndexedDB persistence
 ├── stores/TimelineStore.tsx   # Centralized React state
 ├── sample/demo-timeline.json  # Synthetic demo data
-├── __tests__/                 # Vitest test suite (55 tests)
-└── styles.css                 # Global dark theme
+├── __tests__/                 # Vitest test suite (100+ tests)
+└── styles.css                 # Global theming (dark & light)
 workers/
 └── timeline.worker.ts         # Web Worker for parsing
 ```
@@ -240,7 +247,8 @@ Click **"Load demo data"** on the landing page to explore the application with s
 ## Limitations
 
 - Map tile styling depends on the configured tile provider (demo tiles are basic)
-- Video and PNG/SVG export are future work; GeoJSON, GPX, KML, and CSV are available now
+- PNG/SVG map snapshot export not yet implemented; GeoJSON, GPX, KML, CSV, and video export are available now
+- Video export uses MediaRecorder and produces MP4 or WebM depending on browser support
 - Service worker / offline mode not yet implemented
 - Place names depend on what Google includes in the export (not reverse-geocoded)
 - The application does not perform reverse geocoding to determine cities or countries
@@ -249,10 +257,10 @@ Click **"Load demo data"** on the landing page to explore the application with s
 
 ## Future Roadmap
 
-- [ ] Video export via WebCodecs / ffmpeg.wasm
+- [x] Video export (MediaRecorder-based MP4/WebM recording of the replay)
 - [ ] PNG/SVG map snapshot export
 - [ ] Service worker for offline support
-- [ ] IndexedDB persistence toggle in settings
+- [x] IndexedDB persistence toggle ("Remember this Timeline" on the upload page)
 - [ ] Reverse geocoding for city/country estimation
 - [ ] Cluster visualization for large visit datasets
 - [ ] Route comparison between time periods
